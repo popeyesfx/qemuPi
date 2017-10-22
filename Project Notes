@@ -26,7 +26,7 @@ Software List :
                 Qemu virtual Machine software
                 Raspberry Pi stretch Lite img
                 qemu kernel 4.4.34-jessie
-
+                https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/
 ___________________________________________________
 
 
@@ -119,6 +119,28 @@ Setting up Virtual machine for Debian
 
     Log out and back in again
     Once logged back i  we can set the shared folder option of the virtual machine if required
+
+Install Qemu on virtual machine
+
+1. sudo apt-get install qemu
+
+Prepare our RaspberryPi image
+
+1. Download kernel image from:
+    https://github.com/dhruvvyas90/qemu-rpi-kernel/blob/master/kernel-qemu-4.4.34-jessie
+
+2. Download raspbian image from raspberrypi.org
+    in this case i used stretch-lite as i dont need a desktop
+
+3. prepare image for loading:
+    qemu-img convert -f raw -O qcow2 2017-08-16-raspbian-stretch-lite.zip raspbian-stretch-lite.qcow
+
+4. Expand our image :
+    qemu-img resize raspbian-stretch-lite.qcow +6G
+
+
+
+
 
 
 https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/
