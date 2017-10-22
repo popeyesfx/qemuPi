@@ -1,0 +1,66 @@
+__________________________________________________
+Project Name : Virtual Raspberry Pi Using Qemu
+
+Date: 22/10/2017
+
+Author: J Hider
+
+Description:    The aim of this project is to create a virtual raspberry pi using qemu software. This will be hosted
+                on my mac in a virtual machine running Debian linux. This means that it will be a virtual machine
+                in a virtual machine which is bound to lead to problems.
+___________________________________________________
+
+___________________________________________________
+
+Hardware List :
+
+    Mac Pro
+
+___________________________________________________
+
+___________________________________________________
+
+Software List :
+                VMWare Fusion
+                Debian 9 Linux iso
+                Qemu virtual Machine software
+                Raspberry Pi stretch Lite img
+                qemu kernel 4.4.34-jessie
+
+___________________________________________________
+
+
+---------------------------------------------------
+
+Wiring :
+                NONE
+----------------------------------------------------
+
+
+----------------------------------------------------
+Notes :
+
+Setting up Virtual machine for Debian
+
+1.  Download Debian image from Debian web site
+    https://www.debian.org/distrib/
+    https://www.debian.org/CD/live/
+    amd64 under DVD/USB
+    This gives use the debian-live-9.2.0-amd64-gnome.iso which is 2.3 gigs in size
+
+2. Start Vmware Fusion (8 in this case)
+
+3. Select + from the virual machine library screen on the top right and click new
+
+4. Select install from disc or image
+
+5. select use another disc or image at bottom of screen, navigate to debian image
+
+6. In choose operatingsystem select appropriate one, in this case it only goes up to version 8 of debian
+    so this was chosen 8.x 64 bit
+
+7. Click finish and installation will start
+
+8. Select graphical debian installer then follow onscreen instructions
+
+9.
