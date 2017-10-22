@@ -62,5 +62,63 @@ Setting up Virtual machine for Debian
 7. Click finish and installation will start
 
 8. Select graphical debian installer then follow onscreen instructions
+    installed as qemuPi
+    root password is qemupi
+    User Name Jack Hider
+    user is jack
+    passwd je551ca
 
-9.
+    Guided- use entire disk
+    All files in 1 partition
+    continue
+    yes
+    yes to network mirror
+    UK
+    ftp.uk.debian.org
+    proxy if required (none)
+    load grub loader
+    /dev/sda - continue
+
+    On completion restart machine
+
+9. Once restarted we need to shut down the vm and make some changes to the hardware setting
+    a.  Reset hard drive size from 20 to 40gb
+    b.  Remove printer
+    c.  Set memory to 4096 and cpu numbers to 4
+
+    restart
+    Set display resolution to 1600 x 1200
+    Add jack to sudoers
+        a. change to root user su
+        b. sudo adduser jack sudo
+        c. reboot
+
+10. Install ifconfig
+    sudo apt-get install net-tools
+    sudo apt-get update
+    sudo apt-get upgrade
+
+11. Install VMWare Tools from virtual machine menu
+    a. navigate to VMWare tools in files
+    b. unpack VMwaretools-10.1.6 to downloads
+    c. change to downloads
+    d. run vmware-install.pl in terminal as sudo
+        [/usr/bin]
+        [/etc]
+        [/etc/init.d]
+        [/usr/sbin]
+        [/usr/lib/vmware-tools] - yes create
+        [/usr/lib]
+        [/var/lib]
+        [/usr/share/doc/vmware-tools] - yes create
+        yes invoke
+        yes share files
+        yes enable drag and drop
+        yes automatic kernels
+        no - no guest autho
+
+    Log out and back in again
+    Once logged back i  we can set the shared folder option of the virtual machine if required
+
+
+https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/
