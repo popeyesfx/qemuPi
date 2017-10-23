@@ -133,14 +133,92 @@ Prepare our RaspberryPi image
     in this case i used stretch-lite as i dont need a desktop
 
 3. prepare image for loading:
-    qemu-img convert -f raw -O qcow2 2017-08-16-raspbian-stretch-lite.zip raspbian-stretch-lite.qcow
+    qemu-img convert -f raw -O qcow2 2017-09-07-raspbian-stretch-lite.zip raspbian-stretch-lite.qcow
 
 4. Expand our image :
     qemu-img resize raspbian-stretch-lite.qcow +6G
 
 
+Starting Qemu as root user using sudo
 
+1.  This is a single line command
+    sudo qemu-system-arm \  # the qemu arm system
+    -kernel ./kernel-qemu-4.4.34-jessie \ # our kernel image
+    -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \ #  boot args direct to the kernel, telling it where to find it's root filesytem and what type it is
+    -hda raspbian-stretch-lite.qcow \ # attach the disc image
+    -cpu arm1176 -m 256 \ # processor type and memory size
+    -M versatilepb \ # machine we are emulating. versatilepb is the 'ARM Versatile/PB'
+    -no-reboot \ # tells QEMU to exit rather than rebooting the machine
+    -serial stdio \ # attach serial to host stdio
+    -net nic -net user \
+    -net tap,ifname=vnet0,script=no,downscript=no # this configures the machine's network stack to attach a NIC,
+                                                  # use the user-mode stack, connect the host's vnet0 TAP device to the
+                                                  # new NIC and don't use config scripts.
 
+2.  No Machine specified error
+    Turn out to be an error in the above command
 
+2. Starts but immediately shuts down again, not sure what is wrong yet need to do some research.
 
-https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/
+Fixing shutdown issue
+Found a possible fix at :
+    https://github.com/dhruvvyas90/qemu-rpi-kernel/wiki/Emulating-Jessie-image-with-4.x.xx-kernel
+
+    looks like i need to make adjustments for jessie/stretch as kernel was designed for wheezy
+
+1. Install kpartx
+    sudo apt-get install kpartx
+    sudo apt-get update
+    sudo apt-get upgrade
+
+2. Mount stretch image
+    sudo kpartx -av 2017-09-07-raspbian-stretch-lite.img
+    -a : add mapping
+    -v : verbose mode
+
+    result:
+    add map loop0p1 (254:0): 0 85622 linear 7:0 8192
+    add map loop0p2 (254:1): 0 3528040 linear 7:0 94208
+
+3. create tmp directory
+    sudo mkdir /tmp/raspi
+
+4. mount the partition
+    sudo mount /dev/mapper/loop0p2 /tmp/raspi
+
+5. Edit the /tmp/raspi/etc/ld.so.preload
+    sudo nano /tmp/raspi/etc/ld.so.preload
+    Comment out every entry in it, Ctrl-x » Y to save and exit
+
+6. Unmout image
+    sudo umount /tmp/raspi
+
+7. Close mappings
+    sudo kpartx -dv 2017-09-07-raspbian-stretch-lite.img
+
+    result:
+    del devmap : loop0p2
+    del devmap : loop0p1
+    loop deleted : /dev/loop0
+
+Convert and resize image again
+
+1.  qemu-img convert -f raw -O qcow2 2017-09-07-raspbian-stretch-lite.zip raspbian-stretch-lite.qcow
+    qemu-img resize raspbian-stretch-lite.qcow +6G
+
+2. Retry image, didnt work.
+    using standard img instead of expanded qcow did work.
+
+    sudo qemu-system-arm \  # the qemu arm system
+    -kernel ./kernel-qemu-4.4.34-jessie \ # our kernel image
+    -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" \ #  boot args direct to the kernel, telling it where to find it's root filesytem and what type it is
+    -hda 2017-09-07-raspbian-stretch-lite.img \ # attach the disc image
+    -cpu arm1176 -m 256 \ # processor type and memory size
+    -M versatilepb \ # machine we are emulating. versatilepb is the 'ARM Versatile/PB'
+    -no-reboot \ # tells QEMU to exit rather than rebooting the machine
+    -serial stdio \ # attach serial to host stdio
+    -net nic -net user \
+    -net tap,ifname=vnet0,script=no,downscript=no # this configures the machine's network stack to attach a NIC,
+                                                  # use the user-mode stack, connect the host's vnet0 TAP device to the
+                                                  # new NIC and don't use config scripts.
+
