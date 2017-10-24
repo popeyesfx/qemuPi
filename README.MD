@@ -33,7 +33,7 @@ Here is a video of how it looks
 
 Credits
 -----------
-These are the sites i found helpful in this endeavour, many thanks to there writers.
+These are the sites i found helpful in this endeavour, many thanks to thier writers.
 
 <https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/>
 
