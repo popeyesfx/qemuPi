@@ -222,3 +222,55 @@ Convert and resize image again
                                                   # use the user-mode stack, connect the host's vnet0 TAP device to the
                                                   # new NIC and don't use config scripts.
 
+Resize raw image to 4G
+
+1. qemu-img resize <image_file_name> +4G this adds 4g to partition size
+
+2. Mount image as before, shortened file and kernel file names for ease
+    sudo qemu-system-arm -kernel ./kernel-qemu-jessie -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw"
+    -hda stretch-lite.img -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio
+    -net nic -net user -net tap,ifname=tap0,script=no,downscript=no
+
+3. Use fdisk to resize partition
+    a. fdisk /dev/sda
+    b. note beginning of second partition 94208 in this case
+    c. delete partition 2 with d then 2
+    d. create new partition with n then p then 2 use 94208 as beginning of partition
+    e. back up with w
+    f. restart machine
+
+4. resize root file system with resize2fs /dev/sda2
+
+Installing network connection
+1. Install bridge utilities
+    sudo apt-get install bridge-utils
+
+2. Edit interfaces file: /etc/network/interfaces
+    auto lo ens33 br0
+
+    iface lo inet loopback
+
+    iface ens33 inet manual
+
+    iface br0 inet dhcp
+        bridge_ports ens33
+        bridge_maxwait 0
+        bridge_fd 0
+
+    run ifconfig to check setup after restart
+
+3. Check qemu-bridge-helper is available
+    NOTE: qemu bridge helper in: /usr/lib/qemu
+    running qemu gives a fail
+    qemu-system-arm: -net bridge,name=tap0,bridge=br0,helper=/usr/lib/qemu/qemu-bridge-helper: bridge helper failed
+
+4. Qemu expects a bridge.conf file to be in /etc/qemu/bridge.conf
+    so we have to create one
+    sudo mkdir -p /etc/qemu/bridge.conf
+    add:
+    allow br0
+
+5. start with:
+    sudo qemu-system-arm -kernel ./kernel-qemu-jessie -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw"
+    -hda stretch-lite.img -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio
+    -net nic -net bridge,name=tap0,bridge=br0,helper=/usr/lib/qemu/qemu-bridge-helper
